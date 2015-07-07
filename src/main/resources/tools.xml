@@ -1,0 +1,16 @@
+<tools>
+    <tool id="load-tester" title="Load Tester">
+        <description></description>
+
+        <parameters>
+            <parameter name="p_server" title="Server" type="string" required="true" suggestion="project_connections" width="300" />
+            <parameter name="p_total_runs"   title="Total runs"   type="integer" required="true" minValue="1" />
+            <parameter name="p_concurrent_runs"   title="Concurrent runs"   type="integer" required="true" minValue="1" />
+            <parameter name="p_runs_per_thread"   title="p_runs_per_thread" type="integer" required="true"/>
+            <parameter name="p_batch_size"   title="p_batch_size"   type="integer" required="true"/>
+        </parameters>
+
+        <output  script="load-tester.groovy" type="html" />
+    </tool>
+
+</tools>
