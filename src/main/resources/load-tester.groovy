@@ -23,7 +23,8 @@ ExecutorService service = new ThreadPoolExecutor(p_concurrent_runs.intValue(),
 for (int i=0; i<p_total_runs; ++i) {
     service.submit(new ConnectionTask(dbm, 
                                       p_server, 
-                                      p_batch_size.intValue(), 
+                                      p_batch_size.intValue(),
+                                      p_runs_per_thread.intValue(),
                                       logger)
                    )
 }
@@ -50,12 +51,14 @@ class ConnectionTask implements Runnable {
     final DbMaster dbm
     final String server
     final int batch_size
+    final int runsPerThread;
     final Logger logger
     
-    public ConnectionTask(DbMaster dbm, String server, int batch_size, Logger logger) {
+    public ConnectionTask(DbMaster dbm, String server, int batch_size, int runsPerThread, Logger logger) {
        this.dbm = dbm;
        this.server = server
        this.batch_size = batch_size
+       this.runsPerThread = runsPerThread;
        this.logger = logger
     }
     
@@ -78,7 +81,7 @@ class ConnectionTask implements Runnable {
                 CallableStatement cs;
                 cs = jdbcConnection.prepareCall("{call PROCEDURE(?)}")
 
-                for (int j=0; j<p_runs_per_thread; ++j) {
+                for (int j=0; j<runsPerThread; ++j) {
                     if (Thread.currentThread().isInterrupted()) {
                         logger.info("Thread interrupted");
                         return;
@@ -90,7 +93,7 @@ class ConnectionTask implements Runnable {
                         cs.executeBatch()
                     }    
                 }
-                if ((p_runs_per_thread-1) % batch_size != 0) {
+                if ((runsPerThread-1) % batch_size != 0) {
                     cs.executeBatch()
                 }
                 cs.close()
